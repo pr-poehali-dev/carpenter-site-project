@@ -2,9 +2,27 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 
 const Index = () => {
   const [activeService, setActiveService] = useState<number | null>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [formData, setFormData] = useState({ name: '', contact: '', description: '' });
+  const { toast } = useToast();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast({
+      title: 'Заявка отправлена!',
+      description: 'Мы свяжемся с вами в ближайшее время.',
+    });
+    setFormData({ name: '', contact: '', description: '' });
+    setIsFormOpen(false);
+  };
 
   const services = [
     {
@@ -88,10 +106,59 @@ const Index = () => {
             <a href="#testimonials" className="text-foreground hover:text-accent transition-colors">Отзывы</a>
             <a href="#contact" className="text-foreground hover:text-accent transition-colors">Контакты</a>
           </div>
-          <Button className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold">
-            <Icon name="Phone" size={16} className="mr-2" />
-            Связаться
-          </Button>
+          <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold">
+                <Icon name="Phone" size={16} className="mr-2" />
+                Связаться
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[500px]">
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-bold text-primary">Оставить заявку</DialogTitle>
+                <DialogDescription>
+                  Заполните форму, и я свяжусь с вами для обсуждения проекта
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Ваше имя</Label>
+                  <Input
+                    id="name"
+                    placeholder="Иван Иванов"
+                    value={formData.name}
+                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="contact">Телефон или Email</Label>
+                  <Input
+                    id="contact"
+                    placeholder="+7 (900) 123-45-67"
+                    value={formData.contact}
+                    onChange={(e) => setFormData({...formData, contact: e.target.value})}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="description">Описание проекта</Label>
+                  <Textarea
+                    id="description"
+                    placeholder="Расскажите, что бы вы хотели заказать..."
+                    value={formData.description}
+                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    rows={4}
+                    required
+                  />
+                </div>
+                <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
+                  <Icon name="Send" size={18} className="mr-2" />
+                  Отправить заявку
+                </Button>
+              </form>
+            </DialogContent>
+          </Dialog>
         </nav>
       </header>
 
@@ -107,11 +174,15 @@ const Index = () => {
             Каждая вещь — уникальна и служит десятилетиями.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground text-lg px-8 py-6">
-              <Icon name="MessageSquare" size={20} className="mr-2" />
-              Обсудить проект
-            </Button>
-            <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-2 border-primary hover:bg-primary hover:text-primary-foreground">
+            <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+              <DialogTrigger asChild>
+                <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground text-lg px-8 py-6">
+                  <Icon name="MessageSquare" size={20} className="mr-2" />
+                  Обсудить проект
+                </Button>
+              </DialogTrigger>
+            </Dialog>
+            <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-2 border-primary hover:bg-primary hover:text-primary-foreground" onClick={() => document.getElementById('portfolio')?.scrollIntoView({ behavior: 'smooth' })}>
               <Icon name="Image" size={20} className="mr-2" />
               Смотреть работы
             </Button>
@@ -333,10 +404,20 @@ const Index = () => {
               <p className="text-lg">Москва, ул. Примерная, 15</p>
             </div>
           </div>
-          <Button size="lg" className="bg-accent hover:bg-accent/90 text-primary text-lg px-10 py-6 font-semibold">
-            <Icon name="MessageSquare" size={20} className="mr-2" />
-            Написать в WhatsApp
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+              <DialogTrigger asChild>
+                <Button size="lg" className="bg-accent hover:bg-accent/90 text-primary text-lg px-10 py-6 font-semibold">
+                  <Icon name="FileText" size={20} className="mr-2" />
+                  Оставить заявку
+                </Button>
+              </DialogTrigger>
+            </Dialog>
+            <Button size="lg" variant="outline" className="text-lg px-10 py-6 font-semibold border-2 border-accent hover:bg-accent hover:text-primary">
+              <Icon name="MessageSquare" size={20} className="mr-2" />
+              Написать в WhatsApp
+            </Button>
+          </div>
         </div>
       </section>
 
