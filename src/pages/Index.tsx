@@ -7,12 +7,29 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
 const Index = () => {
   const [activeService, setActiveService] = useState<number | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [formData, setFormData] = useState({ name: '', contact: '', description: '' });
   const { toast } = useToast();
+
+  const navLinks = [
+    { href: '#about', label: 'О мастере' },
+    { href: '#services', label: 'Услуги' },
+    { href: '#portfolio', label: 'Галерея' },
+    { href: '#testimonials', label: 'Отзывы' },
+    { href: '#contact', label: 'Контакты' }
+  ];
+
+  const handleNavClick = (href: string) => {
+    setIsMobileMenuOpen(false);
+    setTimeout(() => {
+      document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,19 +117,20 @@ const Index = () => {
             <span className="text-2xl font-bold text-primary">МастерДрево</span>
           </div>
           <div className="hidden md:flex items-center gap-8">
-            <a href="#about" className="text-foreground hover:text-accent transition-colors">О мастере</a>
-            <a href="#services" className="text-foreground hover:text-accent transition-colors">Услуги</a>
-            <a href="#portfolio" className="text-foreground hover:text-accent transition-colors">Галерея</a>
-            <a href="#testimonials" className="text-foreground hover:text-accent transition-colors">Отзывы</a>
-            <a href="#contact" className="text-foreground hover:text-accent transition-colors">Контакты</a>
+            {navLinks.map((link) => (
+              <a key={link.href} href={link.href} className="text-foreground hover:text-accent transition-colors">
+                {link.label}
+              </a>
+            ))}
           </div>
-          <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold">
-                <Icon name="Phone" size={16} className="mr-2" />
-                Связаться
-              </Button>
-            </DialogTrigger>
+          <div className="flex items-center gap-3">
+            <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+              <DialogTrigger asChild>
+                <Button className="hidden sm:flex bg-accent hover:bg-accent/90 text-accent-foreground font-semibold">
+                  <Icon name="Phone" size={16} className="mr-2" />
+                  Связаться
+                </Button>
+              </DialogTrigger>
             <DialogContent className="sm:max-w-[500px]">
               <DialogHeader>
                 <DialogTitle className="text-2xl font-bold text-primary">Оставить заявку</DialogTitle>
@@ -159,6 +177,46 @@ const Index = () => {
               </form>
             </DialogContent>
           </Dialog>
+          
+          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="md:hidden">
+                <Icon name="Menu" size={24} className="text-primary" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[280px]">
+              <SheetHeader>
+                <SheetTitle className="flex items-center gap-2 text-left">
+                  <Icon name="Hammer" size={24} className="text-accent" />
+                  <span className="text-xl font-bold text-primary">МастерДрево</span>
+                </SheetTitle>
+              </SheetHeader>
+              <nav className="flex flex-col gap-4 mt-8">
+                {navLinks.map((link) => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => handleNavClick(link.href)}
+                    className="flex items-center gap-3 text-lg text-foreground hover:text-accent transition-colors py-3 border-b border-border"
+                  >
+                    <Icon name="ChevronRight" size={20} className="text-accent" />
+                    {link.label}
+                  </a>
+                ))}
+                <Button 
+                  className="mt-4 bg-accent hover:bg-accent/90 text-accent-foreground font-semibold w-full"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    setIsFormOpen(true);
+                  }}
+                >
+                  <Icon name="Phone" size={18} className="mr-2" />
+                  Оставить заявку
+                </Button>
+              </nav>
+            </SheetContent>
+          </Sheet>
+          </div>
         </nav>
       </header>
 
